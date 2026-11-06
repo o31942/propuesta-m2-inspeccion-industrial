@@ -1,0 +1,24 @@
+# Entornos virtuales y cachés de Python
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Artefactos de compilación y empaquetado
+build/
+dist/
+*.egg-info/
+
+# Pesos pesados o datasets crudos (Regla Acto II: > 10 MB fuera de Git)
+*.pt
+*.pth
+*.onnx
+*.safetensors
+*.h5
+*.keras
+data/raw/
