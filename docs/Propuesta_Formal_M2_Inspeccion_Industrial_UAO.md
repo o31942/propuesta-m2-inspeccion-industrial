@@ -186,7 +186,7 @@ A continuación se consolidan los enlaces de acceso directo a los activos de sof
 | Recurso / Evidencia | Enlace / Ubicación y Estado de Verificación |
 | --- | --- |
 | Repositorio Git (Estructura src/ layout) | https://github.com/o31942/propuesta-m2-inspeccion-industrial (Ramas: main, develop, feature/*) |
-| Tablero Kanban e Issues (GitHub Projects) | https://github.com/users/o31942/projects | Issues: https://github.com/o31942/propuesta-m2-inspeccion-industrial/issues (Sincronizado con las 11 HUs / 13 SP y etiquetas ML, Backend, Frontend, Testing) |
+| Tablero Kanban e Issues (GitHub Projects) | https://github.com/users/o31942/projects/3 | Issues: https://github.com/o31942/propuesta-m2-inspeccion-industrial/issues (Sincronizado con las 11 HUs / 13 SP y etiquetas ML, Backend, Frontend, Testing) |
 | Modelo Base en Hugging Face / GitHub | https://huggingface.co/ultralyticsplus/yolov8s | https://github.com/ultralytics/ultralytics |
 | Alternativa en ModelScope | https://modelscope.cn/models/damo/cv_tinynas_object-detection_damoyolo |
 | Dataset Oficial (NEU-DET) | NEU Surface Defect Database: http://faculty.neu.edu.cn/songkechen/zh_CN/zdylm/263270/list/ | Hugging Face: https://huggingface.co/datasets/keremberke/neu-surface-defect-detection |

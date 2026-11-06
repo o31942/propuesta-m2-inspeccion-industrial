@@ -740,7 +740,7 @@ def get_chapters_content() -> list[dict[str, object]]:
                             ],
                             [
                                 "Tablero Kanban e Issues (GitHub Projects)",
-                                "https://github.com/users/o31942/projects | Issues: https://github.com/o31942/propuesta-m2-inspeccion-industrial/issues (Sincronizado con las 11 HUs / 13 SP y etiquetas ML, Backend, Frontend, Testing)",
+                                "https://github.com/users/o31942/projects/3 | Issues: https://github.com/o31942/propuesta-m2-inspeccion-industrial/issues (Sincronizado con las 11 HUs / 13 SP y etiquetas ML, Backend, Frontend, Testing)",
                             ],
                             [
                                 "Modelo Base en Hugging Face / GitHub",
