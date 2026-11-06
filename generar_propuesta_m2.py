@@ -45,11 +45,58 @@ PROJECT_INFO = {
         "CON YOLOV8 / RT-DETR, EXPLICABILIDAD VISUAL Y DESPLIEGUE DOCKER CPU"
     ),
     "integrantes": [
-        ("Omar David Sánchez Jiménez", "Autor — Maestría en IA y CD (UAO)"),
+        ("Omar David Sánchez Jiménez", "Código estudiantil: 2260142"),
     ],
     "docente": "Jan Polanco Velasco",
     "fecha": "Santiago de Cali, Colombia — 5 de noviembre de 2026",
 }
+
+
+def generate_uao_logo(output_png: str) -> str:
+    """Genera el emblema institucional de la Universidad Autónoma de Occidente (UAO) para portada."""
+    fig, ax = plt.subplots(figsize=(2.8, 1.3), dpi=300)
+    fig.patch.set_facecolor("white")
+    ax.set_facecolor("white")
+    ax.set_xlim(0, 1)
+    ax.set_ylim(0, 1)
+    ax.axis("off")
+
+    shield = patches.FancyBboxPatch(
+        (0.06, 0.12),
+        0.88,
+        0.76,
+        boxstyle="round,pad=0.04,rounding_size=0.12",
+        facecolor="#B91C1C",
+        edgecolor="#7F1D1D",
+        linewidth=2.5,
+    )
+    ax.add_patch(shield)
+    ax.text(
+        0.5,
+        0.58,
+        "UAO",
+        fontsize=30,
+        fontweight="bold",
+        color="white",
+        ha="center",
+        va="center",
+        fontname="Arial",
+    )
+    ax.text(
+        0.5,
+        0.26,
+        "UNIVERSIDAD AUTÓNOMA DE OCCIDENTE",
+        fontsize=6.5,
+        fontweight="bold",
+        color="#FEE2E2",
+        ha="center",
+        va="center",
+        fontname="Arial",
+    )
+    plt.tight_layout(pad=0.02)
+    plt.savefig(output_png, dpi=300)
+    plt.close(fig)
+    return output_png
 
 
 # =============================================================================
@@ -828,7 +875,10 @@ def set_cell_margins(cell, top=80, bottom=80, left=120, right=120) -> None:
 
 
 def generate_docx_proposal(
-    chapters: list[dict[str, object]], gantt_png: str, output_docx: str
+    chapters: list[dict[str, object]],
+    gantt_png: str,
+    output_docx: str,
+    logo_png: str | None = None,
 ) -> str:
     """Genera el archivo .docx cumpliendo: Arial, H1 14pt, H2/H3 12pt, Cuerpo 12pt, interlineado 1.5, márgenes 2.5 cm."""
     doc = Document()
@@ -885,14 +935,18 @@ def generate_docx_proposal(
         run.font.size = Pt(12)  # Regla estricta Acto III: Cuerpo = 12 pt
 
     # PORTADA CON LOS 7 ELEMENTOS OBLIGATORIOS DEL ACTO III
+    if logo_png and os.path.exists(logo_png):
+        p_img_logo = doc.add_paragraph()
+        p_img_logo.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        p_img_logo.paragraph_format.space_before = Pt(12)
+        r_img_logo = p_img_logo.add_run()
+        r_img_logo.add_picture(logo_png, width=Inches(2.1))
+
     p_logo = doc.add_paragraph()
     p_logo.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    p_logo.paragraph_format.space_before = Pt(24)
+    p_logo.paragraph_format.space_before = Pt(12)
     r_logo = p_logo.add_run(
-        "[ UAO ]\n"
-        + str(PROJECT_INFO["universidad"])
-        + "\n"
-        + str(PROJECT_INFO["facultad"])
+        str(PROJECT_INFO["universidad"]) + "\n" + str(PROJECT_INFO["facultad"])
     )
     r_logo.bold = True
     r_logo.font.name = "Arial"
@@ -911,8 +965,8 @@ def generate_docx_proposal(
 
     p_tit = doc.add_paragraph()
     p_tit.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    p_tit.paragraph_format.space_before = Pt(48)
-    p_tit.paragraph_format.space_after = Pt(48)
+    p_tit.paragraph_format.space_before = Pt(36)
+    p_tit.paragraph_format.space_after = Pt(36)
     r_tit = p_tit.add_run(str(PROJECT_INFO["titulo"]))
     r_tit.bold = True
     r_tit.font.name = "Arial"
@@ -920,7 +974,7 @@ def generate_docx_proposal(
 
     p_int = doc.add_paragraph()
     p_int.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    int_lines = ["Integrantes del Equipo (Máx. 4):"] + [
+    int_lines = ["Autor / Integrante del Proyecto:"] + [
         f"{nom} — {cod}"
         for nom, cod in PROJECT_INFO["integrantes"]  # type: ignore[index]
     ]
@@ -975,7 +1029,7 @@ def generate_docx_proposal(
                     for run in hdr_cells[c_i].paragraphs[0].runs:
                         run.bold = True
                         run.font.name = "Arial"
-                        run.font.size = Pt(10)
+                        run.font.size = Pt(12)
                         run.font.color.rgb = RGBColor(255, 255, 255)
                 for r_i, r_vals in enumerate(rows):
                     row_cells = tbl.add_row().cells
@@ -985,10 +1039,10 @@ def generate_docx_proposal(
                         set_cell_background(row_cells[c_i], bg)
                         set_cell_margins(row_cells[c_i], 60, 60, 90, 90)
                         for p_cell in row_cells[c_i].paragraphs:
-                            p_cell.paragraph_format.line_spacing = 1.2
+                            p_cell.paragraph_format.line_spacing = 1.5
                             for run in p_cell.runs:
                                 run.font.name = "Arial"
-                                run.font.size = Pt(9.5)
+                                run.font.size = Pt(12)
             if sec.get("image") == "gantt_chart" and os.path.exists(gantt_png):
                 p_img = doc.add_paragraph()
                 p_img.alignment = WD_ALIGN_PARAGRAPH.CENTER
@@ -1282,7 +1336,7 @@ class ProposalPDFEngine:
                     self.x_left + 0.025,
                     self.y_cursor,
                     str(sec["h2"]),
-                    fontsize=11,
+                    fontsize=12,
                     color="#334155",
                     ha="left",
                     va="top",
@@ -1306,7 +1360,7 @@ class ProposalPDFEngine:
             self.x_left + 0.015,
             box_y + 0.098,
             "Cumplimiento de Especificación Editorial y Técnica (Acto III - Entrega M2 35%):",
-            fontsize=10.5,
+            fontsize=12,
             fontweight="bold",
             color="#0F172A",
             ha="left",
@@ -1383,7 +1437,7 @@ class ProposalPDFEngine:
         for block in raw_blocks:
             is_code = block.startswith("  |") or block.startswith("propuesta-m2")
             wrap_w = 84 if is_code else 84
-            font_sz = 9.8 if is_code else 12.0
+            font_sz = 12.0
             step = 0.0165 if is_code else line_step
             lines = textwrap.wrap(block, width=wrap_w) if not is_code else [block]
             for line in lines:
@@ -1586,14 +1640,16 @@ def main() -> None:
     docs_dir = base_dir / "docs"
     docs_dir.mkdir(parents=True, exist_ok=True)
 
+    logo_png = str(docs_dir / "logo_uao.png")
     gantt_png = str(docs_dir / "gantt_cpm_15_dias.png")
     pdf_out = str(docs_dir / "Propuesta_Formal_M2_Inspeccion_Industrial_UAO.pdf")
     docx_out = str(docs_dir / "Propuesta_Formal_M2_Inspeccion_Industrial_UAO.docx")
     md_out = str(docs_dir / "Propuesta_Formal_M2_Inspeccion_Industrial_UAO.md")
 
+    generate_uao_logo(logo_png)
     generate_gantt_chart(gantt_png)
     chapters = get_chapters_content()
-    generate_docx_proposal(chapters, gantt_png, docx_out)
+    generate_docx_proposal(chapters, gantt_png, docx_out, logo_png=logo_png)
     generate_markdown_proposal(chapters, md_out)
 
     # Pasada rápida en memoria para obtener numeración exacta de páginas y TOC

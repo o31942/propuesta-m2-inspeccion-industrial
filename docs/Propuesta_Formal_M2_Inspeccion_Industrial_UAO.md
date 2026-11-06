@@ -3,7 +3,7 @@
 ### PROPUESTA FORMAL M2: SISTEMA DESACOPLADO DE INSPECCIÓN DE CALIDAD INDUSTRIAL PARA DETECCIÓN DE DEFECTOS SUPERFICIALES EN ACERO LAMINADO CON YOLOV8 / RT-DETR, EXPLICABILIDAD VISUAL Y DESPLIEGUE DOCKER CPU
 
 **Integrantes del Equipo:**
-- Omar David Sánchez Jiménez (Autor — Maestría en IA y CD (UAO))
+- Omar David Sánchez Jiménez (Código estudiantil: 2260142)
 
 **Docente:** Jan Polanco Velasco  
 **Fecha formal de radicación:** Santiago de Cali, Colombia — 5 de noviembre de 2026

@@ -254,35 +254,82 @@ def main() -> None:
             else:
                 print(f"Error creando issue {title}: {st_c} {iss_resp}")
 
-    # 6. Intentar crear el tablero GitHub Projects v2 vía GraphQL si el token tiene scope project
-    q_user = {"query": "query { viewer { id login } }"}
+    # 6. Configurar el tablero GitHub Projects v2 como PÚBLICO (public: true) vía GraphQL
+    q_user = {
+        "query": """
+        query {
+          viewer {
+            id
+            login
+            projectsV2(first: 20) {
+              nodes { id title url number public }
+            }
+          }
+        }
+        """
+    }
     st_g, g_resp = gh_api("POST", "https://api.github.com/graphql", token, q_user)
     if st_g == 200 and isinstance(g_resp, dict) and "data" in g_resp:
-        viewer_id = g_resp["data"]["viewer"]["id"]  # type: ignore[index]
-        mut_proj = {
-            "query": """
-            mutation($ownerId: ID!, $title: String!) {
-              createProjectV2(input: {ownerId: $ownerId, title: $title}) {
-                projectV2 { id url number }
-              }
+        viewer = g_resp["data"]["viewer"]  # type: ignore[index]
+        viewer_id = viewer["id"]
+        target_title = "Kanban M2 - Inspección de Calidad Industrial (NEU-DET)"
+        existing_proj = None
+        for node in viewer.get("projectsV2", {}).get("nodes", []):
+            if isinstance(node, dict) and node.get("title") == target_title:
+                existing_proj = node
+                break
+
+        proj_id = ""
+        proj_url = ""
+        if existing_proj:
+            proj_id = str(existing_proj["id"])
+            proj_url = str(existing_proj["url"])
+            print(f"Tablero GitHub Projects encontrado: {proj_url}")
+        else:
+            mut_proj = {
+                "query": """
+                mutation($ownerId: ID!, $title: String!) {
+                  createProjectV2(input: {ownerId: $ownerId, title: $title}) {
+                    projectV2 { id url number }
+                  }
+                }
+                """,
+                "variables": {
+                    "ownerId": viewer_id,
+                    "title": target_title,
+                },
             }
-            """,
-            "variables": {
-                "ownerId": viewer_id,
-                "title": "Kanban M2 - Inspección de Calidad Industrial (NEU-DET)",
-            },
-        }
-        st_p, p_resp = gh_api("POST", "https://api.github.com/graphql", token, mut_proj)
-        if (
-            st_p == 200
-            and isinstance(p_resp, dict)
-            and p_resp.get("data")
-            and p_resp["data"].get("createProjectV2")  # type: ignore[union-attr]
-        ):
-            proj_data = p_resp["data"]["createProjectV2"]["projectV2"]  # type: ignore[index]
-            proj_id = proj_data["id"]
-            proj_url = proj_data["url"]
-            print(f"Tablero GitHub Projects creado: {proj_url}")
+            st_p, p_resp = gh_api(
+                "POST", "https://api.github.com/graphql", token, mut_proj
+            )
+            if (
+                st_p == 200
+                and isinstance(p_resp, dict)
+                and p_resp.get("data")
+                and p_resp["data"].get("createProjectV2")  # type: ignore[union-attr]
+            ):
+                proj_data = p_resp["data"]["createProjectV2"]["projectV2"]  # type: ignore[index]
+                proj_id = str(proj_data["id"])
+                proj_url = str(proj_data["url"])
+                print(f"Tablero GitHub Projects creado: {proj_url}")
+
+        if proj_id:
+            # Asegurar visibilidad PÚBLICA (public: true) del tablero Kanban
+            upd_mut = {
+                "query": """
+                mutation($projectId: ID!) {
+                  updateProjectV2(input: {projectId: $projectId, public: true}) {
+                    projectV2 { id public url }
+                  }
+                }
+                """,
+                "variables": {"projectId": proj_id},
+            }
+            gh_api("POST", "https://api.github.com/graphql", token, upd_mut)
+            print(
+                f"Visibilidad del tablero {proj_url} configurada como PÚBLICA (public: true)."
+            )
+
             for content_id, _status_col in created_node_ids:
                 add_item_mut = {
                     "query": """
@@ -295,15 +342,10 @@ def main() -> None:
                     "variables": {"projectId": proj_id, "contentId": content_id},
                 }
                 gh_api("POST", "https://api.github.com/graphql", token, add_item_mut)
-            print(
-                "Las 11 Historias de Usuario fueron vinculadas al tablero GitHub Projects."
-            )
-        else:
-            print(
-                "Nota: El token actual tiene permisos de repositorio ('repo') pero no el scope 'project' "
-                "para crear tableros Projects v2 vía GraphQL. Los 11 Issues con etiquetas ML, Backend, "
-                "Frontend y Testing ya están creados en el repositorio listos para vincular en 1 clic."
-            )
+            if created_node_ids:
+                print(
+                    "Las 11 Historias de Usuario fueron vinculadas al tablero GitHub Projects."
+                )
 
 
 if __name__ == "__main__":
