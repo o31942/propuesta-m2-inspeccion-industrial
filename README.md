@@ -1,6 +1,6 @@
 # Propuesta Formal M2 — Sistema de Inspección de Calidad Industrial (NEU-DET + YOLOv8 / RT-DETR)
 
-Repositorio industrial y generador documental para el **Acto III: Formulación Formal de la Propuesta de Proyecto (M2 - 35%)** de la asignatura **Gestión de Proyectos en IA y Ciencia de Datos** — *Maestría en Inteligencia Artificial y Ciencia de Datos*, **Universidad Autónoma de Occidente (UAO)** (Docente: Prof. Jan Polanco Velasco).
+Repositorio industrial y generador documental para el **Acto III: Formulación Formal de la Propuesta de Proyecto** de la asignatura **Gestión de Proyectos en IA y Ciencia de Datos** — *Maestría en Inteligencia Artificial y Ciencia de Datos*, **Universidad Autónoma de Occidente (UAO)** (Docente: Prof. Jan Polanco Velasco).
 
 ---
 
